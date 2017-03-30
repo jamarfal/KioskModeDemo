@@ -22,7 +22,9 @@ public class MainActivity extends BaseKioskActivity {
 
     public void activateKioskMode(View view) {
         kioskModePreferences.setKioskModeActive(true);
-        startService(new Intent(this, KioskService.class));
+        Intent serviceIntent = new Intent(this, KioskService.class);
+        serviceIntent.putExtra("prueba", MainActivity.class);
+        startService(serviceIntent);
     }
 
     public void deactivateKioskMode(View view) {

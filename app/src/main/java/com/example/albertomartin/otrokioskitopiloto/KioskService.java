@@ -20,6 +20,7 @@ public class KioskService extends Service {
     private KioskModePreferences kioskModePreferences;
     private LockerOverlayViewHandler lockerOverlayViewHandler;
     private Handler mHandler;
+    private Class classToOpenInIntent;
     private final Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
@@ -52,6 +53,7 @@ public class KioskService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "Starting service 'KioskService'");
+        classToOpenInIntent = (Class) intent.getExtras().get("prueba");
         running = true;
         mHandler.postDelayed(mRunnable, INTERVAL);
         return Service.START_NOT_STICKY;
@@ -95,7 +97,7 @@ public class KioskService extends Service {
     }
 
     private void restoreApp() {
-        Intent i = new Intent(context, MainActivity.class);
+        Intent i = new Intent(context, classToOpenInIntent);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
 
