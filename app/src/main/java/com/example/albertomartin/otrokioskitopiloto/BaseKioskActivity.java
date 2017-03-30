@@ -1,12 +1,10 @@
 package com.example.albertomartin.otrokioskitopiloto;
 
 import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
@@ -27,6 +25,7 @@ import java.util.List;
 public abstract class BaseKioskActivity extends AppCompatActivity {
 
     private KioskModePreferences kioskModePreferences;
+    private PreventStatusBarExpansion preventStatusBarExpansion;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,13 +34,20 @@ public abstract class BaseKioskActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         setContentView(getLayoutId());
 
+        preventStatusBarExpansion = new PreventStatusBarExpansion(this.getApplicationContext());
         kioskModePreferences = new KioskModePreferences(this.getApplicationContext());
-
-        if (kioskModePreferences.isKioskModeActive()) {
-            preventStatusBarExpansion();
-        }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (kioskModePreferences.isKioskModeActive()) {
+            preventStatusBarExpansion();
+            preventStatusBarExpansion.activate();
+        } else {
+            preventStatusBarExpansion.disable();
+        }
+    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -74,7 +80,6 @@ public abstract class BaseKioskActivity extends AppCompatActivity {
             // Close recents apps dialogs
             ((ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE)).moveTaskToFront(getTaskId(), 0);
         }
-
     }
 
 

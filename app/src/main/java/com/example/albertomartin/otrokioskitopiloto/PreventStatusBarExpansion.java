@@ -5,7 +5,6 @@ import android.graphics.PixelFormat;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 
 /**
@@ -16,18 +15,13 @@ import android.view.WindowManager;
 public class PreventStatusBarExpansion {
 
     private final Context context;
-    private final WindowManager windowManager;
     WindowManager.LayoutParams layoutParams;
-    private final CustomViewGroup mView;
+    private CustomViewGroup mView;
 
     public PreventStatusBarExpansion(Context context) {
         this.context = context.getApplicationContext();
 
-        windowManager = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE));
-
         initializeLayoutParams();
-
-        mView = new CustomViewGroup(context);
     }
 
     private void initializeLayoutParams() {
@@ -52,11 +46,21 @@ public class PreventStatusBarExpansion {
     }
 
     public void activate() {
+        if (mView != null) {
+            return;
+        }
+
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        mView = new CustomViewGroup(context);
         windowManager.addView(mView, layoutParams);
     }
 
     public void disable() {
-        windowManager.removeView(mView);
+        if (mView != null) {
+            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            windowManager.removeView(mView);
+            mView = null;
+        }
     }
 
     public static class CustomViewGroup extends ViewGroup {
