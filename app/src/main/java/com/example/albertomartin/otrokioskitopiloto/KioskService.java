@@ -172,6 +172,7 @@ public class KioskService extends Service {
     }
 
     private View lockedOverlay = null;
+    //
 
     private void hideLockedOverlay() {
         if (lockedOverlay != null) {
